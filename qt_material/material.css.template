@@ -185,11 +185,18 @@ QLineEdit:disabled {
 }
 
 /*  ------------------------------------------------------------------------  */
-/*  QComboBox  */
+/*  Default style when these widgets have no focus  */
 
+QLineEdit,
+QPlainTextEdit,
+QTextEdit,
+QSpinBox,
+QDoubleSpinBox,
 QDateEdit,
+QDateTimeEdit,
+QDateTime,
 QComboBox {
-  color: {{primaryTextColor}};
+  color: {{secondaryTextColor|opacity(0.6)}};
   border: 2px solid {{primaryColor}};
   border-radius: 0px;
   border-top-left-radius: 4px;
@@ -1112,9 +1119,11 @@ QListView::item:selected:focus {
   selection-color: {{primaryTextColor}}; /* For Windows */
 }
 
+/*
 QTableView {
   selection-background-color: {{primaryColor|opacity(0.2)}};
 }
+*/
 
 QTableView:focus {
   selection-background-color: {{primaryColor}};
@@ -1130,8 +1139,9 @@ QTableView::item:disabled {
 /*  ------------------------------------------------------------------------  */
 /*  QTreeView  */
 
-QTreeView::branch{
-  background-color: {{secondaryColor}};
+QTreeView::branch {
+  background-color: transparent;
+  border-image: none;
 }
 
 QTreeView::branch:closed:has-children:has-siblings,
@@ -1239,8 +1249,8 @@ QTableCornerButton::section {
   border-color: {{secondaryDarkColor}};
 }
 
-QTableView {
-  alternate-background-color: {{secondaryColor|opacity(0.7)}};
+QTableView, QTreeView, QListView {
+  alternate-background-color: {{secondaryColor|opacity(0.5)}};
 }
 
 QHeaderView {
@@ -1382,6 +1392,8 @@ QDateTimeEdit:focus,
 QSpinBox:focus,
 QDoubleSpinBox:focus,
 QLineEdit:focus,
+QPlainTextEdit:focus,
+QTextEdit:focus,
 QComboBox:focus {
   color: {{primaryColor}};
   border: 2px solid {{primaryColor}};
