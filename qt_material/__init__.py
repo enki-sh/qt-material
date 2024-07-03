@@ -1,12 +1,12 @@
 import os
 import sys
 import logging
-import base64
 from pathlib import Path
 import platform
 from xml.dom.minidom import parse
 
-from qt_material.resources import ResourseGenerator, RESOURCES_PATH
+import jinja2
+from qt_material.resources import ResourseGenerator
 
 GUI = True
 
@@ -56,7 +56,6 @@ else:
     GUI = False
     logging.warning("qt_material must be imported after PySide or PyQt!")
 
-import jinja2
 
 TEMPLATE_FILE = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), 'material.css.template'
@@ -133,6 +132,11 @@ def build_stylesheet(
     theme = get_theme(theme, invert_secondary)
     if theme is None:
         return None
+
+    # Create theme folder per theme
+    theme_name = os.environ["QTMATERIAL_THEME"]
+    if theme_name:
+        parent += "_" + theme_name.removesuffix(".xml")
 
     set_icons_theme(theme, parent=parent)
 
@@ -323,7 +327,6 @@ def apply_stylesheet(
     if save_as:
         with open(save_as, 'w') as file:
             file.writelines(stylesheet)
-
     if css_file and os.path.exists(css_file):
         with open(css_file) as file:
             stylesheet += file.read().format(**os.environ)
@@ -481,7 +484,6 @@ class QtStyleTools:
 
         for density in map(str, range(-3, 4)):
             action = QAction(parent)
-            # action.triggered.connect(self._wrapper(parent, density, self.extra_values, self.update_buttons))
             action.triggered.connect(lambda: self.update_theme_event(parent))
             try:
                 action.setText(density)
@@ -497,21 +499,6 @@ class QtStyleTools:
                 action.action_group = action_group
                 menu.add_action(action)
                 action_group.add_action(action)
-
-        # menu.add_action(action_group)
-
-    # # ----------------------------------------------------------------------
-    # def _wrapper(self, parent, theme, extra, callable_):
-    # """"""
-    # def iner():
-    # self._apply_theme(parent, theme, extra, callable_)
-    # return iner
-
-    # # ----------------------------------------------------------------------
-    # def _apply_theme(self, parent, theme, extra={}, callable_=None):
-    # """"""
-    # self.apply_stylesheet(parent, theme=theme, invert_secondary=theme.startswith(
-    # 'light'), extra=extra, callable_=callable_)
 
     # ----------------------------------------------------------------------
     def apply_stylesheet(
