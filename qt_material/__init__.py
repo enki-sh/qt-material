@@ -10,7 +10,7 @@ from qt_material.resources import ResourseGenerator
 
 GUI = True
 
-if 'PySide2' in sys.modules:
+if "PySide2" in sys.modules:
     from PySide2.QtGui import (
         QFontDatabase,
         QColor,
@@ -21,7 +21,7 @@ if 'PySide2' in sys.modules:
     from PySide2.QtUiTools import QUiLoader
     from PySide2.QtCore import Qt, QDir
 
-elif 'PySide6' in sys.modules:
+elif "PySide6" in sys.modules:
     from PySide6.QtGui import (
         QFontDatabase,
         QAction,
@@ -34,13 +34,13 @@ elif 'PySide6' in sys.modules:
     from PySide6.QtUiTools import QUiLoader
     from PySide6.QtCore import Qt, QDir
 
-elif 'PyQt5' in sys.modules:
+elif "PyQt5" in sys.modules:
     from PyQt5.QtGui import QFontDatabase, QColor, QGuiApplication, QPalette
     from PyQt5.QtWidgets import QAction, QColorDialog, QActionGroup
     from PyQt5.QtCore import Qt, QDir
     from PyQt5 import uic
 
-elif 'PyQt6' in sys.modules:
+elif "PyQt6" in sys.modules:
     from PyQt6.QtGui import (
         QFontDatabase,
         QColor,
@@ -58,66 +58,59 @@ else:
 
 
 TEMPLATE_FILE = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), 'material.css.template'
+    os.path.dirname(os.path.abspath(__file__)), "material.css.template"
 )
 
 
 # ----------------------------------------------------------------------
 def export_theme(
-    theme='',
+    theme="",
     qss=None,
     rcc=None,
     invert_secondary=False,
     extra={},
-    output='theme',
-    prefix='icon:/',
+    output="theme",
+    prefix="icon:/",
 ):
     """"""
-    if not os.path.isabs(output) and not output.startswith('.'):
-        output = f'.{output}'
+    if not os.path.isabs(output) and not output.startswith("."):
+        output = f".{output}"
 
-    stylesheet = build_stylesheet(
-        theme, invert_secondary, extra, output, export=True
-    )
+    stylesheet = build_stylesheet(theme, invert_secondary, extra, output, export=True)
 
-    if output.startswith('.'):
+    if output.startswith("."):
         output = output[1:]
 
-    with open(qss, 'w') as file:
-        file.writelines(stylesheet.replace('icon:/', prefix))
+    with open(qss, "w") as file:
+        file.writelines(stylesheet.replace("icon:/", prefix))
 
     if rcc:
-
-        with open(rcc, 'w') as file:
-            file.write('<RCC>\n')
+        with open(rcc, "w") as file:
+            file.write("<RCC>\n")
             file.write(f'  <qresource prefix="{prefix[:-2]}">\n')
 
-            for subfolder in ['disabled', 'primary']:
-                files = os.listdir(
-                    os.path.join(os.path.abspath(output), subfolder)
-                )
-                files = filter(lambda s: s.endswith('svg'), files)
+            for subfolder in ["disabled", "primary"]:
+                files = os.listdir(os.path.join(os.path.abspath(output), subfolder))
+                files = filter(lambda s: s.endswith("svg"), files)
                 for filename in files:
-                    file.write(
-                        f'    <file>{output}/{subfolder}/{filename}</file>\n'
-                    )
+                    file.write(f"    <file>{output}/{subfolder}/{filename}</file>\n")
 
-            file.write('  </qresource>\n')
+            file.write("  </qresource>\n")
 
             file.write(f'  <qresource prefix="file">\n')
             if qss:
-                file.write(f'    <file>{qss}</file>\n')
-            file.write('  </qresource>\n')
+                file.write(f"    <file>{qss}</file>\n")
+            file.write("  </qresource>\n")
 
-            file.write('</RCC>\n')
+            file.write("</RCC>\n")
 
 
 # ----------------------------------------------------------------------
 def build_stylesheet(
-    theme='',
+    theme="",
     invert_secondary=False,
     extra={},
-    parent='theme',
+    parent="theme",
     template=TEMPLATE_FILE,
     export=False,
 ):
@@ -133,11 +126,6 @@ def build_stylesheet(
     if theme is None:
         return None
 
-    # Create theme folder per theme
-    theme_name = os.environ["QTMATERIAL_THEME"]
-    if theme_name:
-        parent += "_" + theme_name.removesuffix(".xml")
-
     set_icons_theme(theme, parent=parent)
 
     # Render custom template
@@ -145,39 +133,33 @@ def build_stylesheet(
         parent, template = os.path.split(template)
         loader = jinja2.FileSystemLoader(parent)
         env = jinja2.Environment(autoescape=False, loader=loader)
-        env.filters['opacity'] = opacity
-        env.filters['density'] = density
+        env.filters["opacity"] = opacity
+        env.filters["density"] = density
         stylesheet = env.get_template(template)
     else:
         env = jinja2.Environment(autoescape=False, loader=jinja2.BaseLoader)
-        env.filters['opacity'] = opacity
-        env.filters['density'] = density
+        env.filters["opacity"] = opacity
+        env.filters["density"] = density
         stylesheet.from_string(template)
 
-    theme.setdefault('icon', None)
-    theme.setdefault('font_family', 'Roboto')
-    theme.setdefault('danger', '#dc3545')
-    theme.setdefault('warning', '#ffc107')
-    theme.setdefault('success', '#17a2b8')
-    theme.setdefault('density_scale', '0')
-    theme.setdefault('button_shape', 'default')
+    theme.setdefault("icon", None)
+    theme.setdefault("font_family", "Roboto")
+    theme.setdefault("danger", "#dc3545")
+    theme.setdefault("warning", "#ffc107")
+    theme.setdefault("success", "#17a2b8")
+    theme.setdefault("density_scale", "0")
+    theme.setdefault("button_shape", "default")
 
     theme.update(extra)
 
     if GUI:
         default_palette = QGuiApplication.palette()
         color = QColor(
-            *[
-                int(theme['primaryColor'][i : i + 2], 16)
-                for i in range(1, 6, 2)
-            ]
-            + [92]
+            *[int(theme["primaryColor"][i : i + 2], 16) for i in range(1, 6, 2)] + [92]
         )
 
         try:
-            if hasattr(
-                QPalette, 'PlaceholderText'
-            ):  # pyqt5, pyside2, pyside6
+            if hasattr(QPalette, "PlaceholderText"):  # pyqt5, pyside2, pyside6
                 default_palette.setColor(QPalette.PlaceholderText, color)
             else:  # pyqt6
                 default_palette.setColor(QPalette.ColorRole.Text, color)
@@ -188,13 +170,13 @@ def build_stylesheet(
             QGuiApplication.set_palette(default_palette)
 
     environ = {
-        'linux': platform.system() == 'Linux',
-        'windows': platform.system() == 'Windows',
-        'darwin': platform.system() == 'Darwin',
-        'pyqt5': 'PyQt5' in sys.modules,
-        'pyqt6': 'PyQt6' in sys.modules,
-        'pyside2': 'PySide2' in sys.modules,
-        'pyside6': 'PySide6' in sys.modules,
+        "linux": platform.system() == "Linux",
+        "windows": platform.system() == "Windows",
+        "darwin": platform.system() == "Darwin",
+        "pyqt5": "PyQt5" in sys.modules,
+        "pyqt6": "PyQt6" in sys.modules,
+        "pyside2": "PySide2" in sys.modules,
+        "pyside6": "PySide6" in sys.modules,
     }
 
     environ.update(theme)
@@ -206,30 +188,30 @@ def get_theme(theme_name, invert_secondary=False):
     if theme_name in [
         # 'default.xml',
         # 'default',
-        'default_dark.xml',
-        'default_dark',
+        "default_dark.xml",
+        "default_dark",
     ]:
         theme = os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
-            'themes',
-            'dark_teal.xml',
+            "themes",
+            "dark_teal.xml",
             # 'light_cyan_500.xml',
         )
     elif theme_name in [
-        'default_light.xml',
-        'default_light',
-        'default.xml',
-        'default',
+        "default_light.xml",
+        "default_light",
+        "default.xml",
+        "default",
     ]:
         invert_secondary = True
         theme = os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
-            'themes',
-            'light_cyan_500.xml',
+            "themes",
+            "light_cyan_500.xml",
         )
     elif not os.path.exists(theme_name):
         theme = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), 'themes', theme_name
+            os.path.dirname(os.path.abspath(__file__)), "themes", theme_name
         )
     else:
         theme = theme_name
@@ -240,8 +222,8 @@ def get_theme(theme_name, invert_secondary=False):
 
     document = parse(theme)
     theme = {
-        child.getAttribute('name'): child.firstChild.nodeValue
-        for child in document.getElementsByTagName('color')
+        child.getAttribute("name"): child.firstChild.nodeValue
+        for child in document.getElementsByTagName("color")
     }
 
     for k in theme:
@@ -249,26 +231,26 @@ def get_theme(theme_name, invert_secondary=False):
 
     if invert_secondary:
         (
-            theme['secondaryColor'],
-            theme['secondaryLightColor'],
-            theme['secondaryDarkColor'],
+            theme["secondaryColor"],
+            theme["secondaryLightColor"],
+            theme["secondaryDarkColor"],
         ) = (
-            theme['secondaryColor'],
-            theme['secondaryDarkColor'],
-            theme['secondaryLightColor'],
+            theme["secondaryColor"],
+            theme["secondaryDarkColor"],
+            theme["secondaryLightColor"],
         )
 
     for color in [
-        'primaryColor',
-        'primaryLightColor',
-        'secondaryColor',
-        'secondaryLightColor',
-        'secondaryDarkColor',
-        'primaryTextColor',
-        'secondaryTextColor',
+        "primaryColor",
+        "primaryLightColor",
+        "secondaryColor",
+        "secondaryLightColor",
+        "secondaryDarkColor",
+        "primaryTextColor",
+        "secondaryTextColor",
     ]:
-        os.environ[f'QTMATERIAL_{color.upper()}'] = theme[color]
-    os.environ['QTMATERIAL_THEME'] = theme_name
+        os.environ[f"QTMATERIAL_{color.upper()}"] = theme[color]
+    os.environ["QTMATERIAL_THEME"] = theme_name
 
     return theme
 
@@ -276,11 +258,11 @@ def get_theme(theme_name, invert_secondary=False):
 # ----------------------------------------------------------------------
 def add_fonts():
     """"""
-    fonts_path = os.path.join(os.path.dirname(__file__), 'fonts')
+    fonts_path = os.path.join(os.path.dirname(__file__), "fonts")
 
-    for font_dir in ['roboto']:
+    for font_dir in ["roboto"]:
         for font in filter(
-            lambda s: s.endswith('.ttf'),
+            lambda s: s.endswith(".ttf"),
             os.listdir(os.path.join(fonts_path, font_dir)),
         ):
             try:
@@ -296,12 +278,12 @@ def add_fonts():
 # ----------------------------------------------------------------------
 def apply_stylesheet(
     app,
-    theme='',
+    theme="",
     style=None,
     save_as=None,
     invert_secondary=False,
     extra={},
-    parent='theme',
+    parent="theme",
     css_file=None,
 ):
     """"""
@@ -315,17 +297,17 @@ def apply_stylesheet(
             logging.error(f"The style '{style}' does not exist.")
             pass
 
-    if 'QMenu' in extra:
-        for k in extra['QMenu']:
-            extra[f'qmenu_{k}'] = extra['QMenu'][k]
-        extra['QMenu'] = True
+    if "QMenu" in extra:
+        for k in extra["QMenu"]:
+            extra[f"qmenu_{k}"] = extra["QMenu"][k]
+        extra["QMenu"] = True
 
     stylesheet = build_stylesheet(theme, invert_secondary, extra, parent)
     if stylesheet is None:
         return
 
     if save_as:
-        with open(save_as, 'w') as file:
+        with open(save_as, "w") as file:
             file.writelines(stylesheet)
     if css_file and os.path.exists(css_file):
         with open(css_file) as file:
@@ -343,27 +325,23 @@ def opacity(theme, value=0.5):
     r, g, b = theme[1:][0:2], theme[1:][2:4], theme[1:][4:]
     r, g, b = int(r, 16), int(g, 16), int(b, 16)
 
-    return f'rgba({r}, {g}, {b}, {value})'
+    return f"rgba({r}, {g}, {b}, {value})"
 
 
 # ----------------------------------------------------------------------
-def density(
-    value, density_scale, border=0, scale=1, density_interval=4, min_=4
-):
+def density(value, density_scale, border=0, scale=1, density_interval=4, min_=4):
     """"""
     # https://material.io/develop/web/supporting/density
-    if isinstance(value, str) and value.startswith('@'):
+    if isinstance(value, str) and value.startswith("@"):
         return value[1:] * scale
 
-    if value == 'unset':
-        return 'unset'
+    if value == "unset":
+        return "unset"
 
     if isinstance(value, str):
-        value = float(value.replace('px', ''))
+        value = float(value.replace("px", ""))
 
-    density = (
-        value + (density_interval * int(density_scale)) - (border * 2)
-    ) * scale
+    density = (value + (density_interval * int(density_scale)) - (border * 2)) * scale
 
     if density <= 0:
         density = min_
@@ -371,13 +349,13 @@ def density(
 
 
 # ----------------------------------------------------------------------
-def set_icons_theme(theme, parent='theme'):
+def set_icons_theme(theme, parent="theme"):
     """"""
-    source = os.path.join(os.path.dirname(__file__), 'resources', 'source')
+    source = os.path.join(os.path.dirname(__file__), "resources", "source")
     resources = ResourseGenerator(
-        primary=theme['primaryColor'],
-        secondary=theme['secondaryColor'],
-        disabled=theme['secondaryLightColor'],
+        primary=theme["primaryColor"],
+        secondary=theme["secondaryColor"],
+        disabled=theme["secondaryLightColor"],
         source=source,
         parent=parent,
     )
@@ -385,16 +363,16 @@ def set_icons_theme(theme, parent='theme'):
 
     if GUI:
         try:
-            QDir.addSearchPath('icon', resources.index)
+            QDir.addSearchPath("icon", resources.index)
             QDir.addSearchPath(
-                'qt_material',
-                os.path.join(os.path.dirname(__file__), 'resources'),
+                "qt_material",
+                os.path.join(os.path.dirname(__file__), "resources"),
             )
         except:  # snake_case, true_property
-            QDir.add_search_path('icon', resources.index)
+            QDir.add_search_path("icon", resources.index)
             QDir.add_search_path(
-                'qt_material',
-                os.path.join(os.path.dirname(__file__), 'resources'),
+                "qt_material",
+                os.path.join(os.path.dirname(__file__), "resources"),
             )
 
 
@@ -402,15 +380,16 @@ def set_icons_theme(theme, parent='theme'):
 def list_themes():
     """"""
     themes = os.listdir(
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), 'themes')
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "themes")
     )
-    themes = filter(lambda a: a.endswith('xml'), themes)
+    themes = filter(lambda a: a.endswith("xml"), themes)
     return sorted(list(themes))
 
 
 # ----------------------------------------------------------------------
 def deprecated(replace):
     """"""
+
     # ----------------------------------------------------------------------
     def wrap1(fn):
         # ----------------------------------------------------------------------
@@ -432,7 +411,7 @@ class QtStyleTools:
     extra_values = {}
 
     # ----------------------------------------------------------------------
-    @deprecated('set_extra')
+    @deprecated("set_extra")
     def set_extra_colors(self, extra):
         """"""
         self.extra_values = extra
@@ -452,7 +431,7 @@ class QtStyleTools:
         except:
             action_group.exclusive = True
 
-        for i, theme in enumerate(['default'] + list_themes()):
+        for i, theme in enumerate(["default"] + list_themes()):
             action = QAction(parent)
             # action.triggered.connect(self._wrapper(parent, theme, self.extra_values, self.update_buttons))
             action.triggered.connect(lambda: self.update_theme_event(parent))
@@ -488,14 +467,14 @@ class QtStyleTools:
             try:
                 action.setText(density)
                 action.setCheckable(True)
-                action.setChecked(density == '0')
+                action.setChecked(density == "0")
                 action.setActionGroup(action_group)
                 menu.addAction(action)
                 action_group.addAction(action)
             except:  # snake_case, true_property
                 action.text = density
                 action.checkable = True
-                action.checked = density == '0'
+                action.checked = density == "0"
                 action.action_group = action_group
                 menu.add_action(action)
                 action_group.add_action(action)
@@ -505,11 +484,11 @@ class QtStyleTools:
         self, parent, theme, invert_secondary=False, extra={}, callable_=None
     ):
         """"""
-        if theme == 'default':
+        if theme == "default":
             try:
-                parent.setStyleSheet('')
+                parent.setStyleSheet("")
             except:
-                parent.style_sheet = ''
+                parent.style_sheet = ""
             return
 
         apply_stylesheet(
@@ -538,22 +517,18 @@ class QtStyleTools:
             ][0]
         except:
             density = [
-                action.text
-                for action in self.menu_density_.actions()
-                if action.checked
+                action.text for action in self.menu_density_.actions() if action.checked
             ][0]
             theme = [
-                action.text
-                for action in self.menu_theme_.actions()
-                if action.checked
+                action.text for action in self.menu_theme_.actions() if action.checked
             ][0]
 
-        self.extra_values['density_scale'] = density
+        self.extra_values["density_scale"] = density
 
         self.apply_stylesheet(
             parent,
             theme=theme,
-            invert_secondary=theme.startswith('light'),
+            invert_secondary=theme.startswith("light"),
             extra=self.extra_values,
             callable_=self.update_buttons,
         )
@@ -561,57 +536,56 @@ class QtStyleTools:
     # ----------------------------------------------------------------------
     def update_buttons(self):
         """"""
-        if not hasattr(self, 'colors'):
+        if not hasattr(self, "colors"):
             return
 
         theme = {
-            color_: os.environ[f'QTMATERIAL_{color_.upper()}']
-            for color_ in self.colors
+            color_: os.environ[f"QTMATERIAL_{color_.upper()}"] for color_ in self.colors
         }
 
-        if 'light' in os.environ['QTMATERIAL_THEME']:
+        if "light" in os.environ["QTMATERIAL_THEME"]:
             self.dock_theme.checkBox_ligh_theme.setChecked(True)
-        elif 'dark' in os.environ['QTMATERIAL_THEME']:
+        elif "dark" in os.environ["QTMATERIAL_THEME"]:
             self.dock_theme.checkBox_ligh_theme.setChecked(False)
 
         try:
             if self.dock_theme.checkBox_ligh_theme.isChecked():
                 (
-                    theme['secondaryColor'],
-                    theme['secondaryLightColor'],
-                    theme['secondaryDarkColor'],
+                    theme["secondaryColor"],
+                    theme["secondaryLightColor"],
+                    theme["secondaryDarkColor"],
                 ) = (
-                    theme['secondaryColor'],
-                    theme['secondaryDarkColor'],
-                    theme['secondaryLightColor'],
+                    theme["secondaryColor"],
+                    theme["secondaryDarkColor"],
+                    theme["secondaryLightColor"],
                 )
         except:  # snake_case, true_property
             if self.dock_theme.checkBox_ligh_theme.checked:
                 (
-                    theme['secondaryColor'],
-                    theme['secondaryLightColor'],
-                    theme['secondaryDarkColor'],
+                    theme["secondaryColor"],
+                    theme["secondaryLightColor"],
+                    theme["secondaryDarkColor"],
                 ) = (
-                    theme['secondaryColor'],
-                    theme['secondaryDarkColor'],
-                    theme['secondaryLightColor'],
+                    theme["secondaryColor"],
+                    theme["secondaryDarkColor"],
+                    theme["secondaryLightColor"],
                 )
 
         for color_ in self.colors:
-            button = getattr(self.dock_theme, f'pushButton_{color_}')
+            button = getattr(self.dock_theme, f"pushButton_{color_}")
 
             color = theme[color_]
 
             try:
                 if self.get_color(color).getHsv()[2] < 128:
-                    text_color = '#ffffff'
+                    text_color = "#ffffff"
                 else:
-                    text_color = '#000000'
+                    text_color = "#000000"
             except:  # snake_case, true_property
                 if self.get_color(color).get_hsv()[2] < 128:
-                    text_color = '#ffffff'
+                    text_color = "#ffffff"
                 else:
-                    text_color = '#000000'
+                    text_color = "#000000"
 
             button.setStyleSheet(
                 f"""
@@ -632,7 +606,7 @@ class QtStyleTools:
     # ----------------------------------------------------------------------
     def update_theme(self, parent):
         """"""
-        with open('my_theme.xml', 'w') as file:
+        with open("my_theme.xml", "w") as file:
             file.write(
                 """
             <resources>
@@ -644,9 +618,7 @@ class QtStyleTools:
                 <color name="primaryTextColor">{primaryTextColor}</color>
                 <color name="secondaryTextColor">{secondaryTextColor}</color>
               </resources>
-            """.format(
-                    **self.custom_colors
-                )
+            """.format(**self.custom_colors)
             )
         try:
             light = self.dock_theme.checkBox_ligh_theme.isChecked()
@@ -655,7 +627,7 @@ class QtStyleTools:
 
         self.apply_stylesheet(
             parent,
-            'my_theme.xml',
+            "my_theme.xml",
             invert_secondary=light,
             extra=self.extra_values,
             callable_=self.update_buttons,
@@ -682,17 +654,13 @@ class QtStyleTools:
             try:
                 if done and color_.isValid():
                     rgb_255 = [color_.red(), color_.green(), color_.blue()]
-                    color = '#' + ''.join(
-                        [hex(v)[2:].ljust(2, '0') for v in rgb_255]
-                    )
+                    color = "#" + "".join([hex(v)[2:].ljust(2, "0") for v in rgb_255])
                     self.custom_colors[button_] = color
                     self.update_theme(parent)
             except:  # snake_case, true_property
                 if done and color_.is_valid():
                     rgb_255 = [color_.red(), color_.green(), color_.blue()]
-                    color = '#' + ''.join(
-                        [hex(v)[2:].ljust(2, '0') for v in rgb_255]
-                    )
+                    color = "#" + "".join([hex(v)[2:].ljust(2, "0") for v in rgb_255])
                     self.custom_colors[button_] = color
                     self.update_theme(parent)
 
@@ -702,33 +670,30 @@ class QtStyleTools:
     def show_dock_theme(self, parent):
         """"""
         self.colors = [
-            'primaryColor',
-            'primaryLightColor',
-            'secondaryColor',
-            'secondaryLightColor',
-            'secondaryDarkColor',
-            'primaryTextColor',
-            'secondaryTextColor',
+            "primaryColor",
+            "primaryLightColor",
+            "secondaryColor",
+            "secondaryLightColor",
+            "secondaryDarkColor",
+            "primaryTextColor",
+            "secondaryTextColor",
         ]
 
         self.custom_colors = {
-            v: os.environ.get(f'QTMATERIAL_{v.upper()}', '')
-            for v in self.colors
+            v: os.environ.get(f"QTMATERIAL_{v.upper()}", "") for v in self.colors
         }
 
-        if 'PySide2' in sys.modules or 'PySide6' in sys.modules:
+        if "PySide2" in sys.modules or "PySide6" in sys.modules:
             self.dock_theme = QUiLoader().load(
-                os.path.join(os.path.dirname(__file__), 'dock_theme.ui')
+                os.path.join(os.path.dirname(__file__), "dock_theme.ui")
             )
-        elif 'PyQt5' in sys.modules or 'PyQt6' in sys.modules:
+        elif "PyQt5" in sys.modules or "PyQt6" in sys.modules:
             self.dock_theme = uic.loadUi(
-                os.path.join(os.path.dirname(__file__), 'dock_theme.ui')
+                os.path.join(os.path.dirname(__file__), "dock_theme.ui")
             )
 
         try:
-            parent.addDockWidget(
-                Qt.DockWidgetArea.LeftDockWidgetArea, self.dock_theme
-            )
+            parent.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dock_theme)
             self.dock_theme.setFloating(True)
         except:  # snake_case, true_property
             parent.add_dock_widget(
@@ -742,7 +707,7 @@ class QtStyleTools:
         )
 
         for color in self.colors:
-            button = getattr(self.dock_theme, f'pushButton_{color}')
+            button = getattr(self.dock_theme, f"pushButton_{color}")
             button.clicked.connect(self.set_color(parent, color))
 
 
