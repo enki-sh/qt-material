@@ -2,6 +2,16 @@
 /* QtMaterial - https://github.com/UN-GCPDS/qt-material
 /* By Yeison Cardona - GCPDS
 /*  ------------------------------------------------------------------------  */
+/*
+QTMATERIAL_PRIMARYCOLOR={{primaryColor}}
+QTMATERIAL_PRIMARYTEXTCOLOR={{primaryTextColor}}
+QTMATERIAL_PRIMARYLIGHTCOLOR={{primaryLightColor}}
+QTMATERIAL_PRIMARYDARKCOLOR={{primaryDarkColor}}
+QTMATERIAL_SECONDARYCOLOR={{secondaryColor}}
+QTMATERIAL_SECONDARYTEXTCOLOR={{secondaryTextColor}}
+QTMATERIAL_SECONDARYLIGHTCOLOR={{secondaryLightColor}}
+QTMATERIAL_SECONDARYDARKCOLOR={{secondaryDarkColor}}
+*/
 
 *{
   color: {{secondaryTextColor}};
@@ -92,6 +102,10 @@ QFrame.fill_background {
   background-color: {{secondaryColor}};
   border: 2px solid {{secondaryColor}};
   border-radius: 4px;
+}
+
+QFrame {
+  border-radius: 25px;
 }
 
 QSplitter {
