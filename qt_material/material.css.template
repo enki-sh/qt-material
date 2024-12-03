@@ -1111,6 +1111,9 @@ QListView::item {
   selection-color: {{secondaryTextColor}}; /* For Windows */
 }
 
+QTableView::item {
+  background-color: transparent;
+}
 /*  ------------------------------------------------------------------------  */
 /*  Items Selection */
 
