@@ -110,13 +110,17 @@ QFrame {
 
 QSplitter {
   background-color: transparent;
-  border: none
+  border: none;
 }
 
 QStatusBar {
   color: {{secondaryTextColor}};
   background-color: {{secondaryLightColor|opacity(0.2)}};
   border-radius: 0px;
+}
+
+QStatusBar::item {
+  border: none;
 }
 
 QScrollArea,
